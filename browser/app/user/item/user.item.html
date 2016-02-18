@@ -42,7 +42,7 @@
 		</h5>
 	</div>
 	<div class="media-right media-middle">
-		<button ng-if="!isForm" class="btn btn-default" ng-click="removeUser()" eat-click>
+		<button ng-hide="user.isAdmin" ng-if="!isForm" class="btn btn-default" ng-click="removeUser()" eat-click>
 			<span class="glyphicon glyphicon-remove"></span>
 		</button>
 	</div>

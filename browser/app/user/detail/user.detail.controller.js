@@ -17,4 +17,5 @@ app.controller('UserDetailCtrl', function ($scope, user, Story) {
 			$scope.user.stories.splice(idx, 1);
 		});
 	};
+	
 });

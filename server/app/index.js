@@ -4,7 +4,8 @@ var app = require('express')();
 var path = require('path');
 var session = require('express-session');
 var User = require('../api/users/user.model');
-
+var passport = require('passport');
+var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy
 app.use(session({
     // this mandatory configuration ensures that session IDs are not predictable
     secret: 'tongiscool'
@@ -16,11 +17,11 @@ app.use(function (req, res, next) {
     next();
 });
 
-app.use(function (req, res, next) {
-  if (!req.session.counter) req.session.counter = 0;
-  console.log('counter', ++req.session.counter);
-  next();
-});
+// app.use(function (req, res, next) {
+//   if (!req.session.counter) req.session.counter = 0;
+//   console.log('counter', ++req.session.counter);
+//   next();
+// });
 
 app.use(require('./logging.middleware'));
 
@@ -29,6 +30,33 @@ app.use(require('./requestState.middleware'));
 app.use(require('./statics.middleware'));
 
 app.use('/api', require('../api/api.router'));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Google authentication and login 
+app.get('/auth/google', passport.authenticate('google', { scope : 'email' }));
+
+// handle the callback after Google has authenticated the user
+app.get('/auth/google/callback',
+  passport.authenticate('google', {
+    successRedirect : '/',
+    failureRedirect : '/' // or wherever
+  })
+);
+
+passport.use(
+    new GoogleStrategy({
+        clientID: '596793924059-24f9iap80bpkm0seteaocgprnscdp80s.apps.googleusercontent.com',
+        clientSecret: 'hRv2b8KyzatQ2pqDU4u1XfzV',
+        callbackURL: 'http://127.0.0.1:8080/auth/google/callback'
+    },
+    // google will send back the token and profile
+    function (token, refreshToken, profile, done) {
+        console.log('---', 'in verification callback', profile, '---');
+        done();
+    })
+);
 
 app.post('/login', function (req, res, next) {
   User.findOne({
@@ -41,7 +69,8 @@ app.post('/login', function (req, res, next) {
     } else {
       console.log('user found');
       req.session.userId = user._id;
-      res.sendStatus(200);
+      res.status(200);
+      res.send(user)
     }
   })
   .then(null, next);

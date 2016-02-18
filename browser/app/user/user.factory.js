@@ -1,6 +1,7 @@
 'use strict';
 
 app.factory('User', function ($http, Story) {
+
 	function User (props) {
 		angular.extend(this, props);
 	}
@@ -50,6 +51,13 @@ app.factory('User', function ($http, Story) {
 			return new User(res.data);
 		});
 	};
+
+	User.prototype.logInType = function(userId) {
+      User.findOne({_id : userId})
+      .then(function(user) {
+        return user.isAdmin;
+      })
+    }
 
 	User.prototype.destroy = function () {
 		return $http.delete(this.getUrl());

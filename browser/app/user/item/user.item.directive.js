@@ -7,7 +7,8 @@ app.directive('userItem', function () {
 		scope: {
 			user: '=model',
 			glyphicon: '@',
-			iconClick: '&'
+			iconClick: '&',
+			currentUser: '='
 		},
 		link: function (scope, elem, attrs) {
 			if (attrs.hasOwnProperty('isForm')) scope.isForm = true;
@@ -23,7 +24,7 @@ app.directive('userItem', function () {
 				scope.user.destroy().then(function () {
 					scope.user.isDestroyed = true;
 				});
-			};
+			}
 		}
 	}
 });
