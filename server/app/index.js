@@ -31,7 +31,6 @@ app.use(require('./statics.middleware'));
 app.use('/api', require('../api/api.router'));
 
 app.post('/login', function (req, res, next) {
-  console.log('made it to route');
   User.findOne({
     email: req.body.email,
     password: req.body.password
@@ -44,6 +43,20 @@ app.post('/login', function (req, res, next) {
       req.session.userId = user._id;
       res.sendStatus(200);
     }
+  })
+  .then(null, next);
+})
+
+app.post('/logout', function (req, res, next) {
+  req.session.destroy()
+  res.send('logged out')
+})
+
+app.post('/signup', function (req, res, next) {
+  User.create(req.body)
+  .then(function (user) {
+      req.session.userId = user._id;
+      res.sendStatus(200);
   })
   .then(null, next);
 })
